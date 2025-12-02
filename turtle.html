@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtle Skeleton Anatomy (Fixed Layout)</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --ascii-color: #4db6ac; /* 蓝绿色，适合海龟/乌龟主题 */
+            --correct-color: #66bb6a;
+            --wrong-color: #ef5350;
+            --sidebar-bg: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace; /* 必须使用等宽字体 */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden; /* 防止双重滚动条 */
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+            color: var(--ascii-color);
+            border-bottom: 2px solid var(--ascii-color);
+            font-size: 24px;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* 左侧边栏 */
+        .sidebar {
+            width: 220px;
+            min-width: 220px;
+            background: var(--sidebar-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bone-label {
+            background-color: #333;
+            padding: 8px;
+            border: 1px solid #555;
+            cursor: grab;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .bone-label:hover {
+            background-color: #444;
+            border-color: var(--ascii-color);
+        }
+
+        .bone-label:active {
+            cursor: grabbing;
+        }
+
+        .bone-label.used {
+            opacity: 0.3;
+            pointer-events: none;
+            text-decoration: line-through;
+            border-style: dashed;
+        }
+
+        /* 右侧画布区域 */
+        .canvas-area {
+            flex-grow: 1;
+            background-color: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: auto; /* 允许滚动 */
+            display: flex;
+            justify-content: center; /* 让内容居中 */
+            align-items: center;    /* 垂直居中 */
+            padding: 40px;
+            position: relative;
+        }
+
+        /* 核心修复：绘图包装器 
+           inline-block 让它的大小正好等于 pre 的大小
+           position: relative 让内部的 drop-zone 以此为基准定位
+        */
+        .drawing-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        pre.skeleton-ascii {
+            margin: 0;
+            color: var(--ascii-color);
+            font-weight: bold;
+            font-size: 16px; /* 固定字体大小，防止错位 */
+            line-height: 18px; /* 固定行高 */
+            white-space: pre;
+            pointer-events: none; /* 鼠标穿透 */
+        }
+
+        /* 放置区域 */
+        .drop-zone {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px dashed #666;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            font-size: 12px;
+            z-index: 10;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            /* 默认尺寸，具体通过行内样式覆盖 */
+            width: 80px; 
+            height: 24px;
+        }
+
+        .drop-zone::before {
+            content: "?";
+            opacity: 0.5;
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(77, 182, 172, 0.3);
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        .drop-zone.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: #000;
+            font-weight: bold;
+            width: auto !important; /* 让文字撑开 */
+            padding: 0 8px;
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(102, 187, 106, 0.5);
+        }
+
+        .drop-zone.correct::before {
+            content: "";
+        }
+
+        .drop-zone.wrong {
+            background-color: var(--wrong-color);
+            border-color: var(--wrong-color);
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div style="text-align: center; margin-bottom: 10px;">
+        <h1>Turtle Skeleton Anatomy</h1>
+        <span style="color: #777; font-size: 0.9em;">(Side Cutaway View)</span>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar" id="label-container">
+            </div>
+
+        <div class="canvas-area">
+            <div class="drawing-wrapper">
+<pre class="skeleton-ascii">
+                  (1)
+        ,---------------------------------------.
+       /   ___________________________________   \
+      /   /  (2)  (3)                         \   \
+     /   / ================================    \   \
+    /   / /|  |  |  |  |  |  |  |  |  |  |\     \   \
+   |   | | |  |  |  |  |  |  |  |  |  |  | |     |   |
+   |   | | |__|__|__|__|__|__|__|__|__|__| |     |   |
+  /   /  \_________________________________/      \   \
+ |   |                                             |   |
+ |(4)|                                             |(5)|
+ o-o-o                                             o-o-o-o===>
+   |  \                                           / |
+   |   \ (Scapula-internal)            (Pelvis)  /  |
+   |    \                                   (6) /   |
+  (7)    \                                     /   (8)
+   |                                          /     |
+   |                                         /      |
+ __|__                                      /     __|__
+                                           /
+ _________________________________________/
+               (9)
+</pre>
+
+                <div class="drop-zone" data-target="Carapace (dorsal)" style="top: 0px; left: 200px; width: 150px;"></div>
+
+                <div class="drop-zone" data-target="Vertebrae" style="top: 60px; left: 130px;"></div>
+
+                <div class="drop-zone" data-target="Ribs" style="top: 60px; left: 240px;"></div>
+
+                <div class="drop-zone" data-target="Cervical vertebrae" style="top: 170px; left: -10px; width: 140px;"></div>
+
+                <div class="drop-zone" data-target="Caudal vertebrae" style="top: 170px; left: 520px; width: 140px;"></div>
+
+                <div class="drop-zone" data-target="Ischium" style="top: 250px; left: 390px;"></div>
+
+                <div class="drop-zone" data-target="Humerus" style="top: 270px; left: 10px;"></div>
+
+                <div class="drop-zone" data-target="Femur" style="top: 270px; left: 540px;"></div>
+
+                <div class="drop-zone" data-target="Plastron (ventral)" style="top: 380px; left: 180px; width: 160px;"></div>
+
+            </div> </div>
+    </div>
+
+    <script>
+        const bones = [
+            "Carapace (dorsal)",
+            "Plastron (ventral)",
+            "Cervical vertebrae",
+            "Vertebrae",
+            "Ribs",
+            "Humerus",
+            "Femur",
+            "Ischium",
+            "Caudal vertebrae"
+        ];
+
+        const labelContainer = document.getElementById('label-container');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        // 初始化
+        function init() {
+            const shuffled = [...bones].sort(() => Math.random() - 0.5);
+            shuffled.forEach(bone => {
+                const el = document.createElement('div');
+                el.classList.add('bone-label');
+                el.textContent = bone;
+                el.setAttribute('draggable', true);
+                el.setAttribute('data-bone', bone);
+                el.addEventListener('dragstart', dragStart);
+                labelContainer.appendChild(el);
+            });
+        }
+
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.getAttribute('data-bone'));
+        }
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                if (!zone.classList.contains('correct')) {
+                    zone.classList.add('drag-over');
+                }
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+            zone.addEventListener('drop', handleDrop);
+        });
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.target;
+            zone.classList.remove('drag-over');
+
+            if (zone.classList.contains('correct')) return;
+
+            const droppedBone = e.dataTransfer.getData('text/plain');
+            const targetBone = zone.getAttribute('data-target');
+
+            if (droppedBone === targetBone) {
+                // Correct
+                zone.classList.add('correct');
+                zone.textContent = droppedBone;
+                
+                // Disable label
+                const label = document.querySelector(`.bone-label[data-bone="${droppedBone}"]`);
+                if(label) {
+                    label.classList.add('used');
+                    label.setAttribute('draggable', false);
+                }
+            } else {
+                // Wrong
+                zone.classList.add('wrong');
+                setTimeout(() => zone.classList.remove('wrong'), 400);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
