@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frog Skeleton Anatomy</title>
+    <style>
+        :root {
+            --bg-color: #0d1b0d; /* 深沼泽绿背景 */
+            --text-color: #c8e6c9;
+            --ascii-color: #76ff03; /* 鲜艳的青蛙绿 */
+            --correct-color: #00e676;
+            --wrong-color: #ff1744;
+            --sidebar-bg: #1b2e1b;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            color: var(--ascii-color);
+            text-shadow: 0 0 5px rgba(118, 255, 3, 0.3);
+            border-bottom: 2px solid var(--ascii-color);
+        }
+
+        .main-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 200px;
+            min-width: 200px;
+            background: var(--sidebar-bg);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #2e7d32;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .bone-label {
+            background-color: #2e7d32;
+            color: #fff;
+            padding: 8px;
+            border: 1px solid #43a047;
+            cursor: grab;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .bone-label:hover {
+            background-color: #388e3c;
+            box-shadow: 0 0 8px var(--ascii-color);
+        }
+
+        .bone-label:active {
+            cursor: grabbing;
+        }
+
+        .bone-label.used {
+            opacity: 0.3;
+            pointer-events: none;
+            text-decoration: line-through;
+            background-color: #1b2e1b;
+            border-color: #2e7d32;
+        }
+
+        /* 画布区域 */
+        .canvas-area {
+            flex-grow: 1;
+            background-color: #000;
+            border: 2px solid #2e7d32;
+            border-radius: 8px;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            position: relative;
+        }
+
+        /* 关键修复：Wrapper */
+        .drawing-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        pre.skeleton-ascii {
+            margin: 0;
+            color: var(--ascii-color);
+            font-weight: bold;
+            font-size: 15px;
+            line-height: 18px;
+            white-space: pre;
+            pointer-events: none;
+        }
+
+        /* 放置区域 */
+        .drop-zone {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px dashed #555;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
+            font-size: 11px;
+            z-index: 10;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            width: 90px;
+            height: 24px;
+        }
+
+        .drop-zone::before {
+            content: "?";
+            opacity: 0.5;
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(118, 255, 3, 0.2);
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+
+        .drop-zone.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: #000;
+            font-weight: bold;
+            width: auto !important;
+            padding: 0 8px;
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+        }
+
+        .drop-zone.correct::before {
+            content: "";
+        }
+
+        .drop-zone.wrong {
+            background-color: var(--wrong-color);
+            border-color: var(--wrong-color);
+            color: white;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>青蛙骨架</h1>
+    <p style="margin-top:0; color:#66bb6a; font-size:14px;">背面视图 及其抽象 请理解 毕竟我也是用来给自己来练习的 —— Chenzhe </p>
+
+    <div class="main-container">
+        <div class="sidebar" id="label-container">
+            </div>
+
+        <div class="canvas-area">
+            <div class="drawing-wrapper">
+<pre class="skeleton-ascii">
+            (Skull)
+             / . \
+            (  O  )
+             \___/
+              | |
+      (1) -> /   \
+            /_____\
+           /       \      (2)
+          /    |    \    __|__
+     o---o     |     o--|__|__|--o
+    /          |          | |     \
+   /           |          | |      \  <- (3)
+  / (4)        |          | |       \
+ /             |          | |        o
+o              |          | |         \
+ \             |          | |          \
+  \            |          | |           \
+  (5)          |      (6) | | (7)       (5)
+    \          |       \  | |  /          \
+     \         |        \ | | /            \
+      \        |         \| |/              \
+     [Hand]              _|_|_              [Hand]
+                        /     \
+                       (   8   )
+                        \_____/
+                        /     \
+                       /       \
+                      /         \
+                 (9) /           \ (9)
+                    /             \
+                   /               \
+                  o                 o
+                  |                 |
+                  |                 |
+             (10) |                 |
+                  |                 |
+                  |                 |
+                  o                 o
+                 / \               / \
+               [Feet]             [Feet]
+</pre>
+
+                <div class="drop-zone" data-target="Suprascapula" style="top: 90px; left: -20px; width: 110px;"></div>
+
+                <div class="drop-zone" data-target="Vertebrae" style="top: 100px; left: 370px;"></div>
+
+                <div class="drop-zone" data-target="Humerus" style="top: 210px; left: 450px;"></div>
+
+                <div class="drop-zone" data-target="Humerus" style="top: 200px; left: 20px;"></div>
+
+                <div class="drop-zone" data-target="Radioulna" style="top: 320px; left: 0px;"></div>
+
+                <div class="drop-zone" data-target="Ilium" style="top: 310px; left: 210px; width: 60px;"></div>
+
+                <div class="drop-zone" data-target="Urostyle" style="top: 310px; left: 360px; width: 80px;"></div>
+
+                <div class="drop-zone" data-target="Ischium" style="top: 410px; left: 290px; width: 70px;"></div>
+
+                <div class="drop-zone" data-target="Femur" style="top: 500px; left: 100px;"></div>
+
+                <div class="drop-zone" data-target="Tibiofibula" style="top: 620px; left: 100px; width: 100px;"></div>
+
+            </div> </div>
+    </div>
+
+    <script>
+        // 定义骨骼列表
+        const bones = [
+            "Suprascapula",
+            "Vertebrae",
+            "Ilium",
+            "Ischium",
+            "Radioulna",
+            "Humerus",
+            "Urostyle",
+            "Femur",
+            "Tibiofibula"
+        ];
+
+        const labelContainer = document.getElementById('label-container');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        // 初始化
+        function init() {
+            const shuffled = [...bones].sort(() => Math.random() - 0.5);
+            shuffled.forEach(bone => {
+                const el = document.createElement('div');
+                el.classList.add('bone-label');
+                el.textContent = bone;
+                el.setAttribute('draggable', true);
+                el.setAttribute('data-bone', bone);
+                el.addEventListener('dragstart', dragStart);
+                labelContainer.appendChild(el);
+            });
+        }
+
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.getAttribute('data-bone'));
+        }
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                if (!zone.classList.contains('correct')) {
+                    zone.classList.add('drag-over');
+                }
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+            zone.addEventListener('drop', handleDrop);
+        });
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.target;
+            zone.classList.remove('drag-over');
+
+            if (zone.classList.contains('correct')) return;
+
+            const droppedBone = e.dataTransfer.getData('text/plain');
+            const targetBone = zone.getAttribute('data-target');
+
+            if (droppedBone === targetBone) {
+                // Correct logic
+                zone.classList.add('correct');
+                zone.textContent = droppedBone;
+                
+                // Disable side label
+                const label = document.querySelector(`.bone-label[data-bone="${droppedBone}"]`);
+                if(label) {
+                    label.classList.add('used');
+                    label.setAttribute('draggable', false);
+                }
+            } else {
+                // Wrong logic
+                zone.classList.add('wrong');
+                setTimeout(() => zone.classList.remove('wrong'), 400);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
