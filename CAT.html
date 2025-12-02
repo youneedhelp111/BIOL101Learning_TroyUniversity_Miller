@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Cat Skeleton Anatomy</title>
+    <style>
+        :root {
+            --bg-color: #222; /* 深色背景，像黑板或X光 */
+            --text-color: #eee;
+            --ascii-color: #00ffcc; /* 骨架颜色：荧光青 */
+            --box-bg: #333;
+            --correct-color: #4CAF50;
+            --wrong-color: #ff4444;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace; /* 等宽字体对齐字符画 */
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            user-select: none; /* 防止拖拽时选中文字 */
+        }
+
+        h1 {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--ascii-color);
+            padding-bottom: 10px;
+        }
+
+        /* 布局容器 */
+        .main-container {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            max-width: 1400px;
+            align-items: flex-start;
+        }
+
+        /* 左侧：标签库 */
+        .sidebar {
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .bone-label {
+            background-color: #444;
+            color: #fff;
+            padding: 8px 12px;
+            border: 1px solid #666;
+            cursor: grab;
+            font-size: 14px;
+            text-align: center;
+            border-radius: 4px;
+            transition: transform 0.1s;
+        }
+
+        .bone-label:hover {
+            background-color: #555;
+            border-color: #999;
+        }
+
+        .bone-label:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .bone-label.used {
+            opacity: 0.3;
+            text-decoration: line-through;
+            pointer-events: none;
+            border-style: dashed;
+        }
+
+        /* 右侧：字符画区域 */
+        .canvas-area {
+            position: relative;
+            flex-grow: 1;
+            background-color: #1a1a1a;
+            border: 2px solid #444;
+            border-radius: 8px;
+            min-height: 700px; /* 确保有足够高度 */
+            overflow: auto; /* 如果屏幕小，允许滚动 */
+        }
+
+        /* 字符画本体 */
+        pre.skeleton-ascii {
+            color: var(--ascii-color);
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 18px;
+            margin: 40px;
+            pointer-events: none; /* 让鼠标事件穿透到下层，不过这里主要靠绝对定位的盒子 */
+        }
+
+        /* 放置区域 (Drop Zones) */
+        .drop-zone {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px dashed #666;
+            color: #aaa;
+            font-size: 11px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+            padding: 2px;
+            box-sizing: border-box;
+            /* 默认尺寸，个别会通过内联样式覆盖 */
+            width: 90px;
+            height: 25px; 
+            z-index: 10;
+        }
+
+        .drop-zone::before {
+            content: "?";
+            opacity: 0.3;
+        }
+
+        /* 悬停样式 */
+        .drop-zone.drag-over {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* 正确样式 */
+        .drop-zone.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: white;
+            font-weight: bold;
+            border-style: solid;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.4);
+        }
+        .drop-zone.correct::before {
+            content: "";
+        }
+
+        /* 错误动画 */
+        .drop-zone.wrong {
+            background-color: var(--wrong-color);
+            border-color: var(--wrong-color);
+            color: white;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* 引导线 (可选，用于连接盒子和字符) */
+        .guide-line {
+            position: absolute;
+            background-color: #444;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>小猫骨架练习—By 陈喆 2025.12.2</h1>
+    <p style="color:#aaa; margin-bottom: 20px;">把小猫的骨架补充完整</p>
+
+    <div class="main-container">
+        <div class="sidebar" id="label-container">
+            </div>
+
+        <div class="canvas-area">
+            <pre class="skeleton-ascii">
+      [HEAD REGION]                           [SPINAL COLUMN REGION]                                       [TAIL]
+      
+       _______                                 ________________________
+      /       \   (1)      (2)   (3)          |          (4)           |          (5)           (6)         ~~~~~~
+     |  ( O )  |--[===]----[===]-[===]--------o-o-o-o-o-o-o-o-o-o-o-o-o----------[=====]-------[=====]-----o-o-o-o~
+      \_______/    ||       ||    ||          |  (Thoracic)            |         (Lumbar)      (Caudal)
+          |        ||       ||    ||          |                        |
+        (Jaw)      ||       ||    ||        // \                      _|_
+         \_/       ||       ||    ||       //   \ (Ribs)             /   \  <-- Pelvis
+                   ||       ||    ||      //     \                  | (A) |
+                [=====] <--(Scapula)     //       \                 |_____|
+                   |                    //    |    \                   | (B)
+                   |                   //     |     \                  |
+                   |                  //      |      \               (Femur)
+               (Humerus)             //    (Sternum)  \                |
+                   |                //                  \              |
+                   |                                                 (Patella)
+                   o                                                   o
+               (Ulna/Rad)                                            (Tibia)
+                   |                                                   |
+                   |                                                   |
+               [=======] (Carpals)                                 [=======] (Tarsals)
+                   |                                                   |
+               [=======] (Metacarpals)                             [=======] (Metatarsals)
+                   |                                                   |
+                  / \                                                 / \
+                 d   b   (Phalanges-F)                               d   b   (Phalanges-R)
+</pre>
+
+            <div class="drop-zone" data-target="Skull (Cranium)" style="top: 10%; left: 5%;"></div>
+            <div class="drop-zone" data-target="Mandible" style="top: 25%; left: 8%;"></div>
+
+            <div class="drop-zone" data-target="Atlas" style="top: 11%; left: 22%; width: 50px;"></div>
+            <div class="drop-zone" data-target="Axis" style="top: 11%; left: 30%; width: 50px;"></div>
+            <div class="drop-zone" data-target="Cervical Vertebra" style="top: 11%; left: 38%; width: 80px;"></div>
+
+            <div class="drop-zone" data-target="Scapula" style="top: 32%; left: 20%;"></div>
+
+            <div class="drop-zone" data-target="Thoracic Vertebra" style="top: 10%; left: 55%; width: 120px;"></div>
+            <div class="drop-zone" data-target="Lumbar Vertebra" style="top: 10%; left: 78%;"></div>
+            <div class="drop-zone" data-target="Caudal Vertebra" style="top: 10%; left: 90%; width: 80px;"></div>
+
+            <div class="drop-zone" data-target="Ribs" style="top: 30%; left: 55%;"></div>
+            <div class="drop-zone" data-target="Sternum" style="top: 48%; left: 52%;"></div>
+
+            <div class="drop-zone" data-target="Ilium" style="top: 25%; left: 85%; width: 60px;"></div>
+            <div class="drop-zone" data-target="Ischium" style="top: 33%; left: 85%; width: 60px;"></div>
+
+            <div class="drop-zone" data-target="Humerus" style="top: 45%; left: 15%;"></div>
+            <div class="drop-zone" data-target="Carpals" style="top: 65%; left: 15%;"></div>
+            <div class="drop-zone" data-target="Metacarpals" style="top: 73%; left: 15%;"></div>
+            <div class="drop-zone" data-target="Phalanges (Front)" style="top: 85%; left: 15%;"></div>
+
+            <div class="drop-zone" data-target="Femur" style="top: 42%; left: 75%;"></div>
+            <div class="drop-zone" data-target="Patella" style="top: 55%; left: 82%; width: 60px;"></div>
+            <div class="drop-zone" data-target="Tarsals" style="top: 65%; left: 75%;"></div>
+            <div class="drop-zone" data-target="Metatarsals" style="top: 73%; left: 75%;"></div>
+            <div class="drop-zone" data-target="Phalanges (Rear)" style="top: 85%; left: 75%;"></div>
+
+        </div>
+    </div>
+
+    <script>
+        const boneList = [
+            "Skull (Cranium)", "Mandible", 
+            "Atlas", "Axis", "Cervical Vertebra", 
+            "Thoracic Vertebra", "Lumbar Vertebra", "Caudal Vertebra",
+            "Ribs", "Sternum", 
+            "Scapula", "Humerus", 
+            "Carpals", "Metacarpals", "Phalanges (Front)",
+            "Ilium", "Ischium", 
+            "Femur", "Patella", 
+            "Tarsals", "Metatarsals", "Phalanges (Rear)"
+        ];
+
+        const labelContainer = document.getElementById('label-container');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        // 初始化
+        function initGame() {
+            // 随机打乱列表
+            const shuffled = [...boneList].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach(bone => {
+                const div = document.createElement('div');
+                div.classList.add('bone-label');
+                div.setAttribute('draggable', true);
+                div.setAttribute('data-bone', bone);
+                div.textContent = bone;
+                
+                div.addEventListener('dragstart', handleDragStart);
+                labelContainer.appendChild(div);
+            });
+        }
+
+        // 拖拽逻辑
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.getAttribute('data-bone'));
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                if(!zone.classList.contains('correct')) {
+                    zone.classList.add('drag-over');
+                }
+            });
+
+            zone.addEventListener('dragleave', e => {
+                zone.classList.remove('drag-over');
+            });
+
+            zone.addEventListener('drop', handleDrop);
+        });
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.target;
+            zone.classList.remove('drag-over');
+
+            if (zone.classList.contains('correct')) return;
+
+            const droppedBone = e.dataTransfer.getData('text/plain');
+            const targetBone = zone.getAttribute('data-target');
+
+            if (droppedBone === targetBone) {
+                // 正确
+                zone.classList.add('correct');
+                zone.textContent = droppedBone;
+                
+                // 禁用已使用的标签
+                const label = document.querySelector(`.bone-label[data-bone="${droppedBone}"]`);
+                if (label) label.classList.add('used');
+            } else {
+                // 错误
+                zone.classList.add('wrong');
+                setTimeout(() => zone.classList.remove('wrong'), 400);
+            }
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
