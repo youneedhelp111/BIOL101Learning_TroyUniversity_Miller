@@ -1,43 +1,11 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>为什么这么难？</title>
-    <style>
-        /* 简单的样式美化，让页面看起来更清晰 */
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 50px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-        }
-        a {
-            color: #007bff;
-            text-decoration: none;
-            font-size: 1.2em;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
+# 为什么这么难？
 
-    <h1>为什么这么难？</h1>
+这是一个主页标题。
 
-    <p>
-        <a href="CAT.html">点击查看 CAT 页面</a>
-    </p>
+## 导航
 
-    <hr>
-    
-    <p style="color: gray; font-size: 0.9em;">
-        *要使链接正常工作，请确保您的网页文件夹中存在名为 **CAT.html** 的文件。
-    </p>
+[点击跳转到 CAT 详情页面](CAT.html)
 
-</body>
-</html>
+---
+
+*注意：在 GitHub 或其他 Markdown 渲染环境中，这个链接可以直接点击并尝试跳转到同目录下的 CAT.html 文件。*
