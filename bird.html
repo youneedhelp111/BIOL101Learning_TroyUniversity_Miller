@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avian (Bird) Skeleton Anatomy</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --text-color: #f0f0f0;
+            --ascii-color: #ffcc00; /* 鸟类骨骼使用琥珀色/金黄色 */
+            --correct-color: #66bb6a;
+            --wrong-color: #ef5350;
+            --sidebar-bg: rgba(255,255,255,0.05);
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            user-select: none;
+        }
+
+        h1 {
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--ascii-color);
+            padding-bottom: 10px;
+            color: var(--ascii-color);
+        }
+
+        .main-container {
+            display: flex;
+            gap: 30px;
+            width: 100%;
+            max-width: 1400px;
+            align-items: flex-start;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--sidebar-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .bone-label {
+            background-color: #333;
+            color: #ddd;
+            padding: 10px;
+            border: 1px solid #555;
+            cursor: grab;
+            text-align: center;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .bone-label:hover {
+            background-color: #444;
+            border-color: var(--ascii-color);
+            color: #fff;
+        }
+
+        .bone-label:active {
+            cursor: grabbing;
+        }
+
+        .bone-label.used {
+            opacity: 0.2;
+            text-decoration: line-through;
+            pointer-events: none;
+            border-style: dotted;
+        }
+
+        /* 字符画区域 */
+        .canvas-area {
+            position: relative;
+            flex-grow: 1;
+            background-color: #111;
+            border: 2px solid #555;
+            border-radius: 8px;
+            min-height: 750px;
+            overflow: auto;
+            display: flex;
+            justify-content: center; /* 居中字符画 */
+        }
+
+        pre.skeleton-ascii {
+            color: var(--ascii-color);
+            font-weight: bold;
+            font-size: 15px;
+            line-height: 18px;
+            white-space: pre;
+            pointer-events: none;
+            margin-top: 50px;
+        }
+
+        /* 放置区域 (Drop Zones) */
+        .drop-zone {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.08);
+            border: 1px dashed #777;
+            color: #aaa;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-radius: 4px;
+            padding: 2px;
+            width: 100px;
+            height: 30px;
+            z-index: 10;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .drop-zone::before {
+            content: "[ ? ]";
+            font-size: 10px;
+            opacity: 0.5;
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+
+        .drop-zone.correct {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: #000;
+            font-weight: bold;
+            border-style: solid;
+            box-shadow: 0 0 15px rgba(102, 187, 106, 0.3);
+            width: auto !important; /* 让文字撑开宽度 */
+            padding: 5px 10px;
+        }
+        
+        .drop-zone.correct::before {
+            content: "";
+        }
+
+        .drop-zone.wrong {
+            background-color: var(--wrong-color);
+            border-color: var(--wrong-color);
+            color: white;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Avian Skeleton Anatomy</h1>
+    <p style="color:#888; margin-bottom: 20px;">Drag the labels to identify the bird's skeletal adaptation for flight.</p>
+
+    <div class="main-container">
+        <div class="sidebar" id="label-container">
+            </div>
+
+        <div class="canvas-area">
+<pre class="skeleton-ascii">
+            (Beak)
+             \/
+            <--  (1)
+             / \___
+            |  _  _|
+             \___/ 
+               |
+               \
+                \
+                 \  (2)
+                  \
+                   \         (4)
+                    \   ,-----------.
+             (3) ->  \ /             \ 
+                      V     (5)       \__________________
+                      |    ,---.       \                 \
+                      |   /     \       \                 \
+                      |  /       \       \                 \ <- (6)
+                      | |   (R)   |       \                 |
+                      |  \       /         \                |
+                      |   \_____/           |               |
+                      |                     |               |
+                      |                     |               |
+                       \      (7)          /                |
+                        \_________________/                 |
+                                                           /
+                                                          /
+                                       (8) ->     O======O
+                                                 //
+                                                //
+                                               // 
+                                              //
+                                             O  (Knee Joint)
+                                             |
+                                             |
+                                             | (Tibiotarsus - not requested)
+                                             |
+                                             |
+                                             O (Ankle Joint)
+                                             |
+                                             |
+                                             | <- (9)
+                                             |
+                                            / \
+                                          _/___\_ (Toes)
+</pre>
+
+            <div class="drop-zone" data-target="cranium" style="top: 80px; left: 320px;"></div>
+
+            <div class="drop-zone" data-target="cervical vertebrae" style="top: 220px; left: 280px; width: 140px;"></div>
+
+            <div class="drop-zone" data-target="furcula (wishbone)" style="top: 320px; left: 200px; width: 140px;"></div>
+
+            <div class="drop-zone" data-target="scapula" style="top: 180px; left: 550px;"></div>
+
+            <div class="drop-zone" data-target="humerus" style="top: 250px; left: 520px;"></div>
+
+            <div class="drop-zone" data-target="ribs" style="top: 350px; left: 450px; width: 60px;"></div>
+
+            <div class="drop-zone" data-target="pygostyle" style="top: 310px; left: 800px;"></div>
+
+            <div class="drop-zone" data-target="keel of sternum" style="top: 480px; left: 380px; width: 130px;"></div>
+
+            <div class="drop-zone" data-target="femur" style="top: 430px; left: 600px; width: 70px;"></div>
+
+            <div class="drop-zone" data-target="tarsometatarsal" style="top: 680px; left: 700px; width: 130px;"></div>
+
+        </div>
+    </div>
+
+    <script>
+        // 按照用户要求的骨骼列表
+        const boneList = [
+            "cranium",
+            "cervical vertebrae",
+            "ribs",
+            "scapula",
+            "keel of sternum",
+            "humerus",
+            "femur",
+            "pygostyle",
+            "tarsometatarsal",
+            "furcula (wishbone)"
+        ];
+
+        const labelContainer = document.getElementById('label-container');
+        const dropZones = document.querySelectorAll('.drop-zone');
+
+        // 初始化游戏
+        function initGame() {
+            // 随机打乱骨骼名称
+            const shuffled = [...boneList].sort(() => Math.random() - 0.5);
+
+            shuffled.forEach(bone => {
+                const div = document.createElement('div');
+                div.classList.add('bone-label');
+                div.setAttribute('draggable', true);
+                div.setAttribute('data-bone', bone);
+                div.textContent = bone;
+                
+                div.addEventListener('dragstart', handleDragStart);
+                labelContainer.appendChild(div);
+            });
+        }
+
+        // 拖拽开始
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.getAttribute('data-bone'));
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        // 绑定区域事件
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault(); // 允许放置
+                if(!zone.classList.contains('correct')) {
+                    zone.classList.add('drag-over');
+                }
+            });
+
+            zone.addEventListener('dragleave', e => {
+                zone.classList.remove('drag-over');
+            });
+
+            zone.addEventListener('drop', handleDrop);
+        });
+
+        // 放置处理
+        function handleDrop(e) {
+            e.preventDefault();
+            const zone = e.target;
+            zone.classList.remove('drag-over');
+
+            // 如果已经正确锁定，不进行操作
+            if (zone.classList.contains('correct')) return;
+
+            const droppedBone = e.dataTransfer.getData('text/plain');
+            const targetBone = zone.getAttribute('data-target');
+
+            if (droppedBone === targetBone) {
+                // 正确匹配
+                zone.classList.add('correct');
+                zone.textContent = droppedBone;
+                
+                // 将左侧标签标记为已使用
+                const label = document.querySelector(`.bone-label[data-bone="${droppedBone}"]`);
+                if (label) {
+                    label.classList.add('used');
+                    label.setAttribute('draggable', 'false');
+                }
+            } else {
+                // 错误匹配
+                zone.classList.add('wrong');
+                // 动画结束后移除错误样式
+                setTimeout(() => zone.classList.remove('wrong'), 400);
+            }
+        }
+
+        // 启动
+        initGame();
+    </script>
+</body>
+</html>
