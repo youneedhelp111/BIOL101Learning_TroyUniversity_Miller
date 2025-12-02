@@ -1,45 +1,60 @@
-<!DOCTYPE html>
-<html lang="zh">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>为什么这么难？</title>
-    <style>
-        /* 简单的样式美化，让页面看起来更清晰 */
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 50px;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-        }
-        a {
-            color: #007bff;
-            text-decoration: none;
-            font-size: 1.2em;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>练习页面导航 — 陈喆语录</title>
+  <style>
+    /* 简洁美观的基础样式 */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+      padding: 28px;
+      max-width: 880px;
+      margin: 0 auto;
+      color: #111;
+      background: #f8fafc;
+    }
+    h1 { font-size: 2rem; margin: 0 0 12px; color: #b22222; }
+    h2 { font-size: 1.25rem; margin: 20px 0 8px; color: #333; }
+    ul { margin: 10px 0 20px 20px; }
+    a { color: #0b66c3; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+    .meta { color: #666; font-size: 0.95rem; margin-bottom: 12px; }
+    blockquote {
+      margin: 18px 0;
+      padding: 12px 16px;
+      background: #fff;
+      border-left: 4px solid #ddd;
+      color: #333;
+      border-radius: 6px;
+    }
+    .note { font-style: italic; color: #555; margin-top: 12px; }
+    pre { background: #fff; padding: 12px; border-radius: 6px; overflow: auto; }
+  </style>
 </head>
 <body>
+  <h1>为什么这么难？ MILLER 凝娶斯吧！！！</h1>
 
-    <h1>为什么这么难？ MILLER 凝娶斯吧！！！</h1>
+  <p class="meta">我花了20分钟来创建这几个网页 用来给朋友们练习<br>
+  我知道这些骨骼图很抽象 但是我没有时间把他们弄好看了</p>
 
-    <p>
-        <a href="CAT.html">点击查看 CAT 页面</a>
-    </p>
-    <p>
-        <a href="bird.html">点击查看 小鸟 页面</a>
-    </p>
-    <hr>
-    
-    <p style="color: gray; font-size: 0.9em;">
-        *要使链接正常工作，请确保您的网页文件夹中存在名为 **CAT.html** 的文件。
-    </p>
+  <h2>页面导航</h2>
 
+  <ul>
+    <li><a href="CAT.html">点击查看 CAT 页面</a></li>
+    <li><a href="bird.html">点击查看 小鸟 页面</a></li>
+    <li><a href="frog.html">点击查看 青蛙 页面</a></li>
+    <li><a href="turtle.html">点击查看 王八 页面</a></li>
+  </ul>
+
+  <hr />
+
+  <blockquote>
+    <p>要使链接正常工作，请确保您脑子里没有水分。 ——陈喆语录</p>
+  </blockquote>
+
+  <p class="note">（将此文件保存为 <code>index.html</code> 或你想要的文件名，然后把同目录下的 <code>CAT.html</code>、<code>bird.html</code>、<code>frog.html</code>、<code>turtle.html</code> 放在一起，链接就能正常工作。）</p>
 </body>
 </html>
